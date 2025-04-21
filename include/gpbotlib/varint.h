@@ -9,7 +9,10 @@
 #define GP_VARINT_CONTINUE_BIT 0x80
 #define GP_VARINT_SEGMENT_BITS 0x7F
 
-Gp_Result gp_parse_varint(void *buffer, int32_t *val, Gp_Read_Byte_From_Buffer read);
-Gp_Result gp_parse_varlong(void *buffer, int64_t *val, Gp_Read_Byte_From_Buffer read);
+typedef int32_t Gp_Varint;
+typedef int64_t Gp_Varlong;
+
+Gp_Result gp_parse_varint(void *buffer, Gp_Varint *val, Gp_Read_Byte_From_Buffer read);
+Gp_Result gp_parse_varlong(void *buffer, Gp_Varlong *val, Gp_Read_Byte_From_Buffer read);
 
 #endif // _GPBOTLIB_VARINT_H_
