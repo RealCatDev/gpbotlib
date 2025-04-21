@@ -4,13 +4,11 @@
 #include "result.h"
 
 typedef enum Gp_Version {
-  GP_1_18_2 = 0,
-
-  COUNT_GP_VERSIONS
+  GP_1_18_2 = 758,
 } Gp_Version;
 
 typedef int (*Gp_Send_Func)(void *, const char *, int);
-typedef int (*Gp_Recv_Func)(void *, const char *, int);
+typedef int (*Gp_Recv_Func)(void *, char *, int);
 
 typedef struct Gp_Bot {
   Gp_Version version;

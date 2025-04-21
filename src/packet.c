@@ -1,6 +1,7 @@
 #include "gpbotlib/packet.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 Gp_Packet *gp_packet_create(Gp_Varint packetID, Gp_Varint length) {
   Gp_Packet *packet = malloc(sizeof(*packet) + length);
