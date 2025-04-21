@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <stdint.h>
 
 #include <gpbotlib/result.h>
 #include <gpbotlib/bot.h>
+#include <gpbotlib/varint.h>
 
 int main() {
   Gp_Bot bot = {
