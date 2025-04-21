@@ -47,3 +47,31 @@ Gp_Result gp_parse_varlong(void *buffer, Gp_Varlong *val, Gp_Read_Byte_From_Buff
   *value = val;
   return GP_SUCCESS;
 }
+
+
+Gp_Result gp_write_varint(void *buffer, Gp_Varint val, Gp_Write_Byte_From_Buffer write) {
+  uint32_t valUint = val;
+  while (true) {
+    if ((valUint & ~GP_VARINT_SEGMENT_BITS) == 0) {
+      return write(buffer, valUint);
+    }
+
+    Gp_Result result = write(buffer, (valUint & SEGMENT_BITS) | CONTINUE_BIT);
+
+    valUint >>= 7;
+  }
+}
+
+Gp_Result gp_write_varlong(void *buffer, Gp_Varlong val, Gp_Write_Byte_From_Buffer write) {
+  uint64_t valUint = val;
+  while (true) {
+    if ((valUint & ~GP_VARINT_SEGMENT_BITS) == 0) {
+      return write(buffer, valUint);
+    }
+
+    Gp_Result result = write(buffer, (valUint & SEGMENT_BITS) | CONTINUE_BIT);
+
+    valUint >>= 7;
+  }
+}
+
