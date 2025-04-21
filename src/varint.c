@@ -4,8 +4,8 @@
 #include <gpbotlib/result.h>
 #include <gpbotlib/varint.h>
 
-Gp_Result gp_parse_varint(void *buffer, uint32_t *value, Gp_Read_Byte_From_Buffer read) {
-  uint32_t val = 0;
+Gp_Result gp_parse_varint(void *buffer, int32_t *value, Gp_Read_Byte_From_Buffer read) {
+  int32_t val = 0;
   uint8_t position = 0;
   uint8_t currentByte;
 
@@ -26,8 +26,8 @@ Gp_Result gp_parse_varint(void *buffer, uint32_t *value, Gp_Read_Byte_From_Buffe
   return GP_SUCCESS;
 }
 
-Gp_Result gp_parse_varlong(void *buffer, uint64_t *val, Gp_Read_Byte_From_Buffer read) {
-  uint64_t val = 0;
+Gp_Result gp_parse_varlong(void *buffer, int64_t *val, Gp_Read_Byte_From_Buffer read) {
+  int64_t val = 0;
   uint8_t position = 0;
   uint8_t currentByte;
 
