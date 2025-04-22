@@ -16,7 +16,7 @@
 #endif // _WIN32
 
 #ifdef _WIN32
-int send(void *data, const char *buffer, int length) {
+int _send(void *data, const char *buffer, int length) {
   SOCKET sock = *(SOCKET*)data;
 
   int sent = send(sock, buffer, length, 0);
@@ -30,7 +30,7 @@ int send(void *data, const char *buffer, int length) {
   return sent;
 }
 
-int recv(void *data, char *buffer, int length) {
+int _recv(void *data, char *buffer, int length) {
   SOCKET sock = *(SOCKET*)data;
 
   int received = recv(sock, buffer, length, 0);
@@ -46,7 +46,7 @@ int recv(void *data, char *buffer, int length) {
 #endif
 
 int main(void) {
-#ifdef _WIN32
+  #ifdef _WIN32
   WSADATA wsaData; // Thanks ChatGPT for adding WinSock2 here, I didn't care enough to do it myself
   if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
     fprintf(stderr, "WSAStartup failed.\n");
@@ -72,13 +72,14 @@ int main(void) {
     WSACleanup();
     return 1;
   }
-#endif
+  #endif
 
   Gp_Bot bot = {
     .version = GP_1_18_2,
+    .username = GP_STRING("gpbotlibtest"),
     .data = &sock,
-    .send = send,
-    .recv = recv
+    .send = _send,
+    .recv = _recv
   };
 
   Gp_Result result = GP_SUCCESS;
@@ -89,10 +90,10 @@ int main(void) {
 
   (void)gp_bot_leave(&bot);
 
-#ifdef _WIN32
+  #ifdef _WIN32
   closesocket(sock);
   WSACleanup();
-#endif _WIN32
+  #endif // _WIN32
 
   return 0;
 }

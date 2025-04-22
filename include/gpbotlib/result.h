@@ -2,6 +2,8 @@
 #define   _GPBOTLIB_RESULT_H_
 
 typedef enum Gp_Result {
+  GP_DISCONNECTED = -8,
+  GP_INTERNAL_ERROR = -7,
   GP_UNDERFLOW = -6,
   GP_BUY_MORE_RAM = -5,
   GP_VARINT_TOO_LONG = -4,

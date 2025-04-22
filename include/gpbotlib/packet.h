@@ -3,6 +3,7 @@
 
 #include "varint.h"
 #include "string.h"
+#include "uuid.h"
 
 typedef struct Gp_Packet { // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol?oldid=2772783#Packet_format
   Gp_Varint length; // Size of data
@@ -25,6 +26,19 @@ typedef struct Gp_Handshake_Packet_Data { // https://minecraft.wiki/w/Minecraft_
 Gp_Result gp_parse_handshake_packet_data(void *buffer, void **data, Gp_Read_Byte_From_Buffer read);
 Gp_Result gp_write_handshake_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write);
 
-void gp_handshake_packet_free(Gp_Handshake_Packet_Data *data);
+typedef struct Gp_Login_Start_Packet_Data {
+  Gp_String name;
+} Gp_Login_Start_Packet_Data;
+
+Gp_Result gp_parse_login_start_packet_data(void *buffer, void **data, Gp_Read_Byte_From_Buffer read);
+Gp_Result gp_write_login_start_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write);
+
+typedef struct Gp_Login_Success_Packet_Data {
+  Gp_Uuid uuid;
+  Gp_String username;
+} Gp_Login_Success_Packet_Data;
+
+Gp_Result gp_parse_login_success_packet_data(void *buffer, void **data, Gp_Read_Byte_From_Buffer read);
+Gp_Result gp_write_login_success_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write);
 
 #endif // _GPBOTLIB_PACKET_H_
