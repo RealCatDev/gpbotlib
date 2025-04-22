@@ -2,6 +2,7 @@
 #include <gpbotlib/event.h>
 
 #include <stdlib.h>
+#include <string.h>
 
 #define GP_EVENT_STACK_CHUNK_SIZE 256
 
@@ -25,14 +26,16 @@ Gp_Result _gp_add_event(Gp_Event_Stack *stack, Gp_Event event) {
   stack->allocatedStart[(stack->used++) + stack->offset] = event;
 }
 
-Gp_Event gp_poll_event(Gp_Event_Stack *stack) {  
-  if (stack->used == 0)
-    return (Gp_Event){
+Gp_Result gp_poll_event(Gp_Event_Stack *stack, Gp_Event *event) {  
+  if (stack->used == 0) {
+    *event = (Gp_Event){
       .type = GP_EVENT_NONE,
       .event = (Gp_Event_None){}
     };
+    return GP_SUCCESS;
+  }
 
-  Gp_Event event = stack->allocatedStart[stack->offset++];
+  *event  = stack->allocatedStart[stack->offset++];
   if(stack->offset == GP_EVENT_STACK_CHUNK_SIZE) {
     memmove(stack->allocatedStart, stack->allocatedStart + stack->offset * sizeof(Gp_Event), stack->used * sizeof(Gp_Event));
     Gp_Event *resized = realloc(stack->allocatedStart, (stack->allocated - stack->offset));
@@ -40,10 +43,11 @@ Gp_Event gp_poll_event(Gp_Event_Stack *stack) {
       return GP_BUY_MORE_RAM; // Or less :/
     stack->allocatedStart = resized;
   }
-  return event;
+  
+  return GP_SUCCESS;
 }
 
 Gp_Result _gp_free_event_stack(Gp_Event_Stack *stack) {
-  free(stack->allocatedStack);
-  stack->allocatedStack == NULL;
+  free(stack->allocatedStart);
+  stack->allocatedStart == NULL;
 }

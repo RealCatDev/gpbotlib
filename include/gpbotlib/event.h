@@ -35,7 +35,7 @@ typedef struct {
 
 Gp_Result _gp_init_event_stack(Gp_Event_Stack *stack);
 Gp_Result _gp_add_event(Gp_Event_Stack *stack, Gp_Event event);
-Gp_Event gp_poll_event(Gp_Event_Stack *stack);
+Gp_Result gp_poll_event(Gp_Event_Stack *stack, Gp_Event *event);
 Gp_Result _gp_free_event_stack(Gp_Event_Stack *stack);
 
 #endif // _GPBOTLIB_EVENT_H
