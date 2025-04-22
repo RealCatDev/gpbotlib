@@ -57,6 +57,8 @@ Gp_Result gp_bot_join(Gp_Bot *bot) {
   _Gp_Buffer sendBuffer = {0};
   if ((result = gp_write_varint(&sendBuffer, handshake->length, _gp_write_byte_to_buffer)) < GP_SUCCESS) return result;
   if ((result = gp_write_varint(&sendBuffer, handshake->packetID, _gp_write_byte_to_buffer)) < GP_SUCCESS) return result;
+  Gp_Handshake_Packet_Data data = *(Gp_Handshake_Packet_Data*)handshake->data;
+  if ((result = gp_write_handshake_packet_data(&sendBuffer, data, _gp_write_byte_to_buffer)) < GP_SUCCESS) return result;
 
   return GP_SUCCESS;
 }

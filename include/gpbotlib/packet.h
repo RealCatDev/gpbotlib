@@ -2,6 +2,7 @@
 #define   _GPBOTLIB_PACKET_H_
 
 #include "varint.h"
+#include "string.h"
 
 typedef struct Gp_Packet { // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol?oldid=2772783#Packet_format
   Gp_Varint length;
@@ -11,16 +12,16 @@ typedef struct Gp_Packet { // https://minecraft.wiki/w/Minecraft_Wiki:Projects/w
 
 Gp_Packet *gp_packet_create(Gp_Varint packetID, Gp_Varint length);
 
-typedef struct Gp_Packet_String {
-  Gp_Varint length;
-  char *data;
-} Gp_Packet_String;
-
 typedef struct Gp_Handshake_Packet_Data { // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol?oldid=2772783#Handshake
   Gp_Varint protocolVersion;
-  Gp_Packet_String serverAddress;
+  Gp_String serverAddress;
   uint16_t serverPort;
   Gp_Varint nextState;
 } Gp_Handshake_Packet_Data;
+
+Gp_Result gp_parse_handshake_packet_data(void *buffer, Gp_Handshake_Packet_Data *data, Gp_Read_Byte_From_Buffer read);
+Gp_Result gp_write_handshake_packet_data(void *buffer, Gp_Handshake_Packet_Data data, Gp_Write_Byte_To_Buffer write);
+
+void gp_handshake_packet_free(Gp_Handshake_Packet_Data *data);
 
 #endif // _GPBOTLIB_PACKET_H_
