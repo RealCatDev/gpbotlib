@@ -59,12 +59,11 @@ Gp_Result gp_write_varint(void *buffer, Gp_Varint val, Gp_Write_Byte_To_Buffer w
   Gp_Result result = GP_SUCCESS;
 
   uint32_t valUint = val;
-  while (result >= GP_SUCCESS) {
-    result = write(buffer, (valUint & GP_VARINT_SEGMENT_BITS) | ((valUint & ~GP_VARINT_SEGMENT_BITS)?0:GP_VARINT_CONTINUE_BIT));
-    if ((valUint & ~GP_VARINT_SEGMENT_BITS) == 0) break;
+  do {
+    result = write(buffer, (valUint & GP_VARINT_SEGMENT_BITS) | ((valUint & ~GP_VARINT_SEGMENT_BITS)?GP_VARINT_CONTINUE_BIT:0));
 
     valUint >>= 7;
-  }
+  } while (valUint && result >= GP_SUCCESS);
 
   return result;
 }
@@ -75,12 +74,11 @@ Gp_Result gp_write_varlong(void *buffer, Gp_Varlong val, Gp_Write_Byte_To_Buffer
   Gp_Result result = GP_SUCCESS;
 
   uint64_t valUint = val;
-  while (result >= GP_SUCCESS) {
-    result = write(buffer, (valUint & GP_VARINT_SEGMENT_BITS) | GP_VARINT_CONTINUE_BIT);
-    if ((valUint & ~GP_VARINT_SEGMENT_BITS) == 0) break;
+  do {
+    result = write(buffer, (valUint & GP_VARINT_SEGMENT_BITS) | ((valUint & ~GP_VARINT_SEGMENT_BITS)?GP_VARINT_CONTINUE_BIT:0));
 
     valUint >>= 7;
-  }
+  } while (valUint && result >= GP_SUCCESS);
 
   return result;
 }

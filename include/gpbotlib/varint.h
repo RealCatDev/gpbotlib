@@ -3,11 +3,11 @@
 
 #include <gpbotlib/buffer.h>
 
-#include <stddef.h> 
+#include <stddef.h>
 #include <stdint.h>
 
-#define GP_VARINT_CONTINUE_BIT 0x80
-#define GP_VARINT_SEGMENT_BITS 0x7F
+#define GP_VARINT_CONTINUE_BIT   1<<7
+#define GP_VARINT_SEGMENT_BITS ~(GP_VARINT_CONTINUE_BIT)
 
 typedef int32_t Gp_Varint;
 typedef int64_t Gp_Varlong;
