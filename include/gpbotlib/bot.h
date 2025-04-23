@@ -19,6 +19,8 @@ typedef enum Gp_Bot_State {
   GP_BOT_LOGIN,
   GP_BOT_PLAY,
 
+  GP_BOT_OFFLINE,
+
   COUNT_GP_BOT_STATES
 } Gp_Bot_State;
 
@@ -30,7 +32,6 @@ typedef struct Gp_Bot {
   Gp_Send_Func send;
   Gp_Recv_Func recv;
 
-  bool online;
   Gp_Uuid uuid;
   Gp_Bot_State state;
   Gp_Event_Queue eventQueue;

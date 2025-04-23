@@ -209,7 +209,7 @@ Gp_Result gp_bot_update(Gp_Bot *bot) {
 
 Gp_Result gp_bot_is_offline(Gp_Bot *bot) {
   if (!bot) return GP_INVALID_ARGS;
-  return !bot->online;
+  return bot->state == GP_BOT_OFFLINE;
 }
 
 
