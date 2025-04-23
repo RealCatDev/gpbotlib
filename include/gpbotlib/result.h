@@ -2,6 +2,7 @@
 #define   _GPBOTLIB_RESULT_H_
 
 typedef enum Gp_Result {
+  GP_INVALID_PACKET = -9,
   GP_DISCONNECTED = -8,
   GP_INTERNAL_ERROR = -7,
   GP_UNDERFLOW = -6,

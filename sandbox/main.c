@@ -137,10 +137,10 @@ int main(void) {
     while ((result = gp_poll_event(&bot.eventQueue, &event)) > GP_SUCCESS) {
       switch (event.type) {
       case GP_EVENT_JOIN: {
-
+        printf("Joined!\n");
       } break;
       case GP_EVENT_DISCONNECT: {
-
+        printf("Disconnected with reason: %.*s!\n", (int)event.as.disconnect.reason.length, event.as.disconnect.reason.data);
       } break;
       }
     }
