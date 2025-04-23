@@ -1,10 +1,11 @@
 #ifndef   _GPBOTLIB_BOT_H_
 #define   _GPBOTLIB_BOT_H_
 
-#include "result.h"
-#include "event.h"
-#include "string.h"
-#include "uuid.h"
+#include <gpbotlib/result.h>
+#include <gpbotlib/event.h>
+#include <gpbotlib/string.h>
+#include <gpbotlib/uuid.h>
+#include <stddef.h>
 
 typedef enum Gp_Version {
   GP_1_18_2 = 758,
@@ -34,6 +35,8 @@ typedef struct Gp_Bot {
   Gp_Uuid uuid;
   Gp_Bot_State state;
   Gp_Event_Queue eventQueue;
+  
+  size_t maximumWithoutCompresssion;
 } Gp_Bot;
 
 Gp_Result gp_bot_join(Gp_Bot *bot);

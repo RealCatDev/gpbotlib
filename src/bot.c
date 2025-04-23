@@ -2,6 +2,7 @@
 
 #include "gpbotlib/packet.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
@@ -52,9 +53,15 @@ static struct {
         .parse = gp_parse_login_success_packet_data,
         .write = gp_write_login_success_packet_data,
         .length = sizeof(Gp_Login_Success_Packet_Data)
-      }
+      },
+      {
+	.parse = gp_parse_login_set_compression_packet_data,
+	.write = gp_write_login_set_compression_packet_data,c
+	.length = sizeof(Gp_Login_Set_Compression_Packet_Data)
+      }, // Set compression (skip for now)
+      {0}, // Login plugin request (skip for now)
     },
-    .clientboundPacketCount = 3,
+    .clientboundPacketCount = 5,
   },
   // [GP_BOT_PLAY] = {
 
@@ -300,6 +307,7 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   if ((result = gp_parse_varint(&recvBuffer, &packetId, _gp_read_byte_from_buffer)) < GP_SUCCESS) return result;
 
   _Gp_Packet_Data_Funcs funcs = s_states[bot->state].clientboundPackets[packetId];
+  fprintf(stderr, "recv packet! STATE: %d, PACKET ID: %d\n", bot->state, packetId);
   *packet = gp_packet_create(packetId, funcs.length);
 
   char *dataChar = (*packet)->data;

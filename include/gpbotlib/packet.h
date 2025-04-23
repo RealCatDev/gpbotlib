@@ -1,9 +1,9 @@
 #ifndef   _GPBOTLIB_PACKET_H_
 #define   _GPBOTLIB_PACKET_H_
 
-#include "varint.h"
-#include "string.h"
-#include "uuid.h"
+#include <gpbotlib/varint.h>
+#include <gpbotlib/string.h>
+#include <gpbotlib/uuid.h>
 
 typedef struct Gp_Packet { // https://minecraft.wiki/w/Minecraft_Wiki:Projects/wiki.vg_merge/Protocol?oldid=2772783#Packet_format
   Gp_Varint length; // Size of data
@@ -40,5 +40,13 @@ typedef struct Gp_Login_Success_Packet_Data {
 
 Gp_Result gp_parse_login_success_packet_data(void *buffer, void **data, Gp_Read_Byte_From_Buffer read);
 Gp_Result gp_write_login_success_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write);
+
+typedef struct Gp_Login_Set_Compression_Packet_Data {
+  Gp_Varint maximumNonCompressedPacket;
+} Gp_Login_Set_Compression_Packet_Data;
+
+Gp_Result gp_parse_login_set_compression_packet_data(void *buffer, void **data, Gp_Read_Byte_From_Buffer read);
+Gp_Result gp_write_login_set_compression_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write);
+
 
 #endif // _GPBOTLIB_PACKET_H_
