@@ -82,3 +82,24 @@ Gp_Result gp_write_login_success_packet_data(void *buffer, void *data, Gp_Write_
 
   return GP_SUCCESS;
 }
+
+Gp_Result gp_parse_login_set_compression_packet_data(void *buffer, void **data, Gp_Read_Byte_From_Buffer read) {
+  if (!buffer || !data || !read) return GP_INVALID_ARGS;
+  Gp_Login_Set_Compression_Packet_Data *loginSetCompression = *(Gp_Login_Set_Compression_Packet_Data**)data;
+
+  Gp_Result result = GP_SUCCESS;
+  if ((result = gp_parse_varint(buffer, &loginSetCompression->maximumNonCompressedPacket, read)) < GP_SUCCESS) return result;
+
+  return GP_SUCCESS;
+}
+
+Gp_Result gp_write_login_set_compression_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write) {
+  
+  if (!buffer || !data || !write) return GP_INVALID_ARGS;
+  Gp_Login_Set_Compression_Packet_Data loginSetCompression = *(Gp_Login_Set_Compression_Packet_Data*)data;
+
+  Gp_Result result = GP_SUCCESS;
+  if ((result = gp_write_varint(buffer, loginSetCompression.maximumNonCompressedPacket, write)) < GP_SUCCESS) return result;
+
+  return GP_SUCCESS;
+}

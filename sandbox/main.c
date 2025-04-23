@@ -5,17 +5,21 @@
 #include <gpbotlib/bot.h>
 #include <gpbotlib/varint.h>
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdlib.h>
+#elif defined(__linux__)
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <sys/socket.h>
 #else
 #error "Unsupported"
 #endif // _WIN32
 
-#ifdef _WIN32
+#if defined(_WIN32)
 int _send(void *data, const char *buffer, int length) {
   SOCKET sock = *(SOCKET*)data;
 
@@ -43,10 +47,37 @@ int _recv(void *data, char *buffer, int length) {
 
   return received;
 }
+#elif defined(__linux__)
+int _send(void *data, const char *buffer, int length) {
+  int sock = *(int *)data;
+
+  int sent = send(sock, buffer, length, 0);
+  if (sent == -1) {
+    perror("Send failed");
+    return -1;
+  }
+
+  printf("Sent %d bytes!\n", sent);
+
+  return sent;
+}
+
+int _recv(void *data, char *buffer, int length) {
+  int sock = *(int *)data;
+
+  int received = recv(sock, buffer, length, 0);
+  if(received == -1) {
+    perror("Recv failed");
+  }
+
+  printf("Recieved %d bytes!\n", received);
+  printf("\n");
+  return received;
+}
 #endif
 
 int main(void) {
-  #ifdef _WIN32
+  #if defined(_WIN32)
   WSADATA wsaData; // Thanks ChatGPT for adding WinSock2 here, I didn't care enough to do it myself
   if (WSAStartup(MAKEWORD(2,2), &wsaData) != 0) {
     fprintf(stderr, "WSAStartup failed.\n");
@@ -72,6 +103,14 @@ int main(void) {
     WSACleanup();
     return 1;
   }
+  #elif defined(__linux__)
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  struct sockaddr_in serverAddr = {
+    .sin_family = AF_INET,
+    .sin_port = htons(25565),
+    .sin_addr.s_addr = inet_addr("127.0.0.1")
+  };
+  connect(sock, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in));
   #endif
 
   Gp_Bot bot = {
@@ -114,9 +153,11 @@ int main(void) {
 
   (void)gp_bot_leave(&bot);
 
-  #ifdef _WIN32
+  #if defined(_WIN32)
   closesocket(sock);
   WSACleanup();
+  #elif defined(_WIN32)
+  close(sock);
   #endif // _WIN32
 
   return 0;
