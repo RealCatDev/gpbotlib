@@ -1,2 +1,6 @@
 add_executable(sandbox main.c)
-target_link_libraries(sandbox gpbotlib ws2_32)
+# set(CMAKE_BUILD_TYPE Debug)
+target_link_libraries(sandbox gpbotlib)
+if(WIN32)
+  target_link_libraries(sandbox ws2_32)
+endif()
