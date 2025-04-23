@@ -88,6 +88,30 @@ int main(void) {
     return 1;
   }
 
+  while (!gp_bot_is_offline(&bot)) {
+    if ((result = gp_bot_update(&bot)) < GP_SUCCESS) {
+      fprintf(stderr, "Failed to update bot: %s!\n", gp_result_as_cstr(result));
+      return 1;
+    }
+
+    Gp_Event event = {0};
+    while ((result = gp_poll_event(&bot.eventQueue, &event)) > GP_SUCCESS) {
+      switch (event.type) {
+      case GP_EVENT_JOIN: {
+
+      } break;
+      case GP_EVENT_DISCONNECT: {
+
+      } break;
+      }
+    }
+
+    if (result < GP_SUCCESS) {
+      fprintf(stderr, "Failed to poll event: %s!\n", gp_result_as_cstr(result));
+      return 1;
+    }
+  }
+
   (void)gp_bot_leave(&bot);
 
   #ifdef _WIN32

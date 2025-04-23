@@ -2,6 +2,7 @@
 #define   _GPBOTLIB_BOT_H_
 
 #include "result.h"
+#include "event.h"
 #include "string.h"
 #include "uuid.h"
 
@@ -29,11 +30,15 @@ typedef struct Gp_Bot {
   Gp_Send_Func send;
   Gp_Recv_Func recv;
 
+  bool online;
   Gp_Uuid uuid;
   Gp_Bot_State state;
+  Gp_Event_Queue eventQueue;
 } Gp_Bot;
 
 Gp_Result gp_bot_join(Gp_Bot *bot);
 Gp_Result gp_bot_leave(Gp_Bot *bot);
+Gp_Result gp_bot_update(Gp_Bot *bot);
+Gp_Result gp_bot_is_offline(Gp_Bot *bot);
 
 #endif // _GPBOTLIB_BOT_H_

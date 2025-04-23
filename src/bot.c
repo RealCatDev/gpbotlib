@@ -199,6 +199,19 @@ Gp_Result gp_bot_leave(Gp_Bot *bot) {
   return GP_SUCCESS;
 }
 
+Gp_Result gp_bot_update(Gp_Bot *bot) {
+  if (!bot) return GP_INVALID_ARGS;
+
+
+
+  return GP_SUCCESS;
+}
+
+Gp_Result gp_bot_is_offline(Gp_Bot *bot) {
+  if (!bot) return GP_INVALID_ARGS;
+  return !bot->online;
+}
+
 
 
 Gp_Result _gp_bot_handshake(Gp_Bot *bot, Gp_Bot_State nextState, Gp_Packet **packet) {

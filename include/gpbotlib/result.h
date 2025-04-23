@@ -11,6 +11,7 @@ typedef enum Gp_Result {
   GP_READ_ERROR = -2,
   GP_WRITE_ERROR = -1,
   GP_SUCCESS = 0,
+  GP_TRUE = 1,
 } Gp_Result;
 
 const char *gp_result_as_cstr(Gp_Result result);
