@@ -36,8 +36,9 @@ typedef struct Gp_Bot {
   Gp_Uuid uuid;
   Gp_Bot_State state;
   Gp_Event_Queue eventQueue;
-  
-  size_t maximumWithoutCompresssion;
+  Gp_Buffer recvBuffer;
+
+  Gp_Varint compressionThreshold;
 } Gp_Bot;
 
 Gp_Result gp_bot_join(Gp_Bot *bot);

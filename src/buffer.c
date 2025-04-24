@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Gp_Result _gp_reserve_buffer(_Gp_Buffer *buffer, size_t capacity) {
+Gp_Result _gp_reserve_buffer(Gp_Buffer *buffer, size_t capacity) {
   if (!buffer || !capacity) return GP_INVALID_ARGS;
 
   buffer->data = malloc(buffer->capacity += capacity);
@@ -15,9 +15,9 @@ Gp_Result _gp_reserve_buffer(_Gp_Buffer *buffer, size_t capacity) {
 Gp_Result _gp_read_byte_from_buffer(void *buffer, uint8_t *byte) {
   if (!buffer || !byte) return GP_INVALID_ARGS;
 
-  _Gp_Buffer *_gp_buffer = (_Gp_Buffer*)buffer;
-  if (_gp_buffer->current >= _gp_buffer->count) return GP_UNDERFLOW;
-  *byte = _gp_buffer->data[_gp_buffer->current++];
+  Gp_Buffer *buf = (Gp_Buffer*)buffer;
+  if (buf->current >= buf->count) return GP_UNDERFLOW;
+  *byte = buf->data[buf->current++];
 
   return GP_SUCCESS;
 }
@@ -25,22 +25,22 @@ Gp_Result _gp_read_byte_from_buffer(void *buffer, uint8_t *byte) {
 Gp_Result _gp_write_byte_to_buffer(void *buffer, uint8_t byte) {
   if (!buffer) return GP_INVALID_ARGS;
 
-  _Gp_Buffer *_gp_buffer = (_Gp_Buffer*)buffer;
-  if (_gp_buffer->count >= _gp_buffer->capacity) {
-    if (_gp_buffer->capacity) _gp_buffer->capacity <<= 1;
-    else _gp_buffer->capacity = 64;
+  Gp_Buffer *buf = (Gp_Buffer*)buffer;
+  if (buf->count >= buf->capacity) {
+    if (buf->capacity) buf->capacity <<= 1;
+    else buf->capacity = 64;
 
-    _gp_buffer->data = realloc(_gp_buffer->data, _gp_buffer->capacity);
-    if (!_gp_buffer->data) return GP_BUY_MORE_RAM;
+    buf->data = realloc(buf->data, buf->capacity);
+    if (!buf->data) return GP_BUY_MORE_RAM;
   }
 
-  if (!_gp_buffer->data) return GP_INVALID_ARGS;
-  _gp_buffer->data[_gp_buffer->count++] = byte;
+  if (!buf->data) return GP_INVALID_ARGS;
+  buf->data[buf->count++] = byte;
 
   return GP_SUCCESS;
 }
 
-Gp_Result _gp_shift_buffer(_Gp_Buffer *buffer, size_t offset) {
+Gp_Result _gp_shift_buffer(Gp_Buffer *buffer, size_t offset) {
   if (!buffer) return GP_INVALID_ARGS;
   if (!offset) return GP_SUCCESS;
 
@@ -61,7 +61,7 @@ Gp_Result _gp_shift_buffer(_Gp_Buffer *buffer, size_t offset) {
   return GP_SUCCESS;
 }
 
-Gp_Result _gp_copy_buffer(_Gp_Buffer *dst, const _Gp_Buffer *src, size_t position) {
+Gp_Result _gp_copy_buffer(Gp_Buffer *dst, const Gp_Buffer *src, size_t position) {
   if (!dst || !src) return GP_INVALID_ARGS;
 
   size_t dstCapacity = dst->count-(dst->count-position)+src->count;

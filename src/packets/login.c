@@ -54,7 +54,7 @@ Gp_Result gp_parse_login_plugin_request_packet_data(void *buffer, Gp_Packet **pa
 
   Gp_Result result = GP_SUCCESS;
 
-  _Gp_Buffer *_buffer = (_Gp_Buffer*)buffer;
+  Gp_Buffer *_buffer = (Gp_Buffer*)buffer;
 
   Gp_Login_Plugin_Request_Packet_Data data = {0};
   if ((result = gp_parse_varint(buffer, &data.messageId, read)) < GP_SUCCESS) return result;

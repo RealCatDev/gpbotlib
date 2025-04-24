@@ -4,6 +4,9 @@
 
 const char *gp_result_as_cstr(Gp_Result result) {
   switch (result) {
+  case GP_INVALID_PACKET: return "Invalid packet";
+  case GP_DISCONNECTED: return "Disconnected";
+  case GP_INTERNAL_ERROR: return "Internal error";
   case GP_UNDERFLOW: return "Underflow";
   case GP_BUY_MORE_RAM: return "Buy more ram";
   case GP_VARINT_TOO_LONG: return "Varint too long";
