@@ -46,7 +46,7 @@ Gp_Result gp_parse_set_compression_packet_data(void *buffer, Gp_Packet **packet,
   *packet = gp_packet_create(3, sizeof(Gp_Set_Compression_Packet_Data));
   if (!*packet) return GP_BUY_MORE_RAM;
   Gp_Set_Compression_Packet_Data *setCompression = (Gp_Set_Compression_Packet_Data*)(*packet)->data;
-  return gp_parse_varint(buffer, &setCompression->treshold, read);
+  return gp_parse_varint(buffer, &setCompression->threshold, read);
 }
 
 Gp_Result gp_parse_login_plugin_request_packet_data(void *buffer, Gp_Packet **packet, Gp_Read_Byte_From_Buffer read) {

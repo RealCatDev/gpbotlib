@@ -27,7 +27,7 @@ typedef struct Gp_Login_Success_Packet_Data {
 Gp_Result gp_parse_login_success_packet_data(void *buffer, Gp_Packet **packet, Gp_Read_Byte_From_Buffer read);
 
 typedef struct Gp_Set_Compression_Packet_Data {
-  Gp_Varint treshold;
+  Gp_Varint threshold;
 } Gp_Set_Compression_Packet_Data;
 
 Gp_Result gp_parse_set_compression_packet_data(void *buffer, Gp_Packet **packet, Gp_Read_Byte_From_Buffer read);
