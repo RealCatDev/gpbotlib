@@ -174,12 +174,13 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   Gp_Varint length = 0;
   size_t lengthSize = 0;
 
+  size_t save = bot->recvBuffer.current;
   do {
-    bot->recvBuffer.current = 0;
     result = gp_parse_varint(&bot->recvBuffer, &length, _gp_read_byte_from_buffer);
     if (result == GP_UNDERFLOW) {
-      if ((result = _gp_reserve_buffer(&bot->recvBuffer, 1024)) < GP_SUCCESS) return result;
+      // if ((result = _gp_reserve_buffer(&bot->recvBuffer, 1024)) < GP_SUCCESS) return result;
 
+      bot->recvBuffer.current = save;
       if ((result = _gp_bot_recv(bot)) < GP_SUCCESS) return result;
     } else if (result < GP_SUCCESS) return result;
     else lengthSize = bot->recvBuffer.current;
@@ -195,7 +196,7 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   Gp_Varint packetId = 0;
   if ((result = gp_parse_varint(&bot->recvBuffer, &packetId, _gp_read_byte_from_buffer)) < GP_SUCCESS) return result;
 
-  printf("Bot received packet: %d, current state: %d\n", packetId, bot->state);
+  printf("Bot received packet %d with length: %d, current state: %d\n", packetId, length, bot->state);
 
   switch (bot->state) {
   case GP_BOT_HANDSHAKE: {
@@ -213,7 +214,7 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   default: assert(0);
   }
 
-  bot->recvBuffer.current += length;
+  bot->recvBuffer.current -= length;
   memmove(bot->recvBuffer.data, &bot->recvBuffer.data[bot->recvBuffer.current], bot->recvBuffer.count -= length+lengthSize);
 
   return GP_SUCCESS;
