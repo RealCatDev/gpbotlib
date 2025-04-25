@@ -4,6 +4,8 @@
 
 const char *gp_result_as_cstr(Gp_Result result) {
   switch (result) {
+  case GP_DUPLICATE: return "Duplicate";
+  case GP_INVALID_JSON: return "Invalid JSON";
   case GP_INVALID_PACKET: return "Invalid packet";
   case GP_DISCONNECTED: return "Disconnected";
   case GP_INTERNAL_ERROR: return "Internal error";
