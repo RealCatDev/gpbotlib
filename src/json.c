@@ -222,10 +222,20 @@ Gp_Result gp_json_from_string_view(Gp_Json *json, Gp_String_View *sv) {
     for (const char *ptr = intPart.items, *end = intPart.items+intPart.count; ptr != end; ++ptr)
       number = (number*10) + *ptr - '0';
 
+    if (*sv->items == '.') {
+      gp_string_view_chop(sv, 1);
+      Gp_String_View floatingPart = gp_string_view_chop_while(sv, (bool(*)(char))isdigit);
+
+      double divisor = 1;
+      for (const char *ptr = floatingPart.items, *end = floatingPart.items + floatingPart.count; ptr != end; ++ptr) {
+        number = (number * 10) + (*ptr - '0');
+        divisor *= 10;
+      }
+      number /= divisor;
+    }
+
     json->type = GP_JSON_NUMBER;
     json->as.number = number;
-
-    if (*sv->items == '.') assert(0 && "Unimplemented");
   } else {
     Gp_String_View token = gp_string_view_chop_while(sv, (bool(*)(char))isalnum);
     if (gp_string_view_is_eq(token, GP_STRING_VIEW("true"))) {
