@@ -12,7 +12,7 @@ Gp_Result _gp_create_nbt_tag_and_alloc_data(Gp_Nbt_Tag **tag, size_t dataSize) {
   (*tag)->data = malloc(dataSize);
 }
 
-void gp_is_valid_nbt(const Gp_Nbt nbt) {
+bool gp_is_valid_nbt(const Gp_Nbt nbt) {
   return nbt.type == GP_NBT_TAG_COMPOUND;
 }
 
