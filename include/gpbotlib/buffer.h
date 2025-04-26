@@ -1,6 +1,7 @@
 #ifndef _GPBOTLIB_BUFFER_H_
 #define _GPBOTLIB_BUFFER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include "result.h"
