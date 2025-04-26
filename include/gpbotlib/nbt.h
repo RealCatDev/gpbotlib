@@ -60,7 +60,7 @@ typedef struct Gp_Nbt_Tag_Long_Array_Data {
 } Gp_Nbt_Tag_Long_Array_Data;
 
 typedef Gp_Nbt_Tag Gp_Nbt;
-void gp_is_valid_nbt(const Gp_Nbt nbt);
+bool gp_is_valid_nbt(const Gp_Nbt nbt);
 Gp_Result gp_nbt_parse(void *buffer, Gp_Nbt *nbt, const Gp_Read_Byte_From_Buffer read);
 Gp_Result gp_nbt_write(void *buffer, Gp_Nbt nbt, const Gp_Write_Byte_From_Buffer write);
 
