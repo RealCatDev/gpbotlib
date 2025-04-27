@@ -4,12 +4,12 @@
 
 // We do not use status state atm so we might as well not implement any status packets :3
 
-Gp_Result _gp_parse_packet_status(void *buffer, Gp_Varint packetId, Gp_Packet **packet, Gp_Read_Byte_From_Buffer read) {
+Gp_Result _gp_parse_packet_status(void *buffer, Gp_Varint packetId, Gp_Packet **packet) {
   assert(0 && "Unimplemented");
   return GP_INTERNAL_ERROR;
 }
 
-Gp_Result _gp_write_packet_status(void *buffer, Gp_Packet *packet, Gp_Write_Byte_To_Buffer write) {
+Gp_Result _gp_write_packet_status(void *buffer, Gp_Packet *packet) {
   assert(0 && "Unimplemented");
   return GP_INTERNAL_ERROR;
 }

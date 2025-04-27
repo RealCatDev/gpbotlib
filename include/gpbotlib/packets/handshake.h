@@ -10,7 +10,7 @@ typedef struct Gp_Handshake_Packet_Data { // https://minecraft.wiki/w/Minecraft_
   Gp_Varint nextState;
 } Gp_Handshake_Packet_Data;
 
-Gp_Result gp_write_handshake_packet_data(void *buffer, void *data, Gp_Write_Byte_To_Buffer write);
+Gp_Result gp_write_handshake_packet_data(void *buffer, void *data);
 
 Gp_Packet *gp_create_handshake_packet(Gp_Varint protocolVersion, Gp_String serverAddress, uint16_t serverPort, Gp_Varint nextState);
 

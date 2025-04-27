@@ -33,7 +33,11 @@ typedef int64_t Gp_Nbt_Tag_Long;
 typedef float Gp_Nbt_Tag_Float;
 typedef double Gp_Nbt_Tag_Double;
 
-typedef struct Gp_Nbt_Tag *Gp_Nbt_Tag_Compound;
+typedef struct Gp_Nbt_Tag_Compound {
+  Gp_Nbt_Tag *tags;
+  size_t capacity;
+  size_t count;
+} Gp_Nbt_Tag_Compound;
 
 typedef struct Gp_Nbt_Tag_Byte_Array {
   int32_t size;
@@ -41,14 +45,16 @@ typedef struct Gp_Nbt_Tag_Byte_Array {
 } Gp_Nbt_Tag_Byte_Array;
 
 typedef struct Gp_Nbt_Tag_String {
-  uint16_t lenght;
+  uint16_t length;
   char *string;
 } Gp_Nbt_Tag_String;
 
+typedef struct Gp_Nbt_Tag_As Gp_Nbt_Tag_As;
+
 typedef struct Gp_Nbt_Tag_List {
   Gp_Nbt_Tag_Type tagType;
-  int32_t lenght;
-  void *payload;
+  int32_t length;
+  Gp_Nbt_Tag_As *payload;
 } Gp_Nbt_Tag_List;
 
 typedef struct Gp_Nbt_Tag_Int_Array {
@@ -61,11 +67,8 @@ typedef struct Gp_Nbt_Tag_Long_Array {
   Gp_Nbt_Tag_Long *data;
 } Gp_Nbt_Tag_Long_Array;
 
-struct Gp_Nbt_Tag {
-  Gp_Nbt_Tag_Type type;
-  uint16_t nameLength;
-  const char *name;
-  union Gp_Nbt_Tag_As {
+struct Gp_Nbt_Tag_As {
+  union {
     Gp_Nbt_Tag_Byte Byte;
     Gp_Nbt_Tag_Short Short;
     Gp_Nbt_Tag_Int Int;
@@ -78,14 +81,21 @@ struct Gp_Nbt_Tag {
     Gp_Nbt_Tag_Compound Compound;
     Gp_Nbt_Tag_Int_Array IntArray;
     Gp_Nbt_Tag_Long_Array LongArray;
-  } as;
+  };
+};
+
+struct Gp_Nbt_Tag {
+  Gp_Nbt_Tag_Type type;
+  uint16_t nameLength;
+  char *name;
+  Gp_Nbt_Tag_As as;
 };
 
 typedef Gp_Nbt_Tag Gp_Nbt;
 
 bool gp_is_valid_nbt(Gp_Nbt nbt);
 
-Gp_Result gp_parse_nbt(void *buffer, Gp_Nbt *nbt, const Gp_Read_Byte_From_Buffer read);
-Gp_Result gp_write_nbt(void *buffer, Gp_Nbt nbt, const Gp_Write_Byte_To_Buffer write);
+Gp_Result gp_parse_nbt_tag(void *buffer, Gp_Nbt_Tag *tag);
+Gp_Result gp_write_nbt_tag(void *buffer, Gp_Nbt_Tag tag);
 
 #endif // _GPBOTLIB_NBT_H_

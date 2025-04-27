@@ -124,26 +124,26 @@ Gp_Result _gp_bot_send_packet(Gp_Bot *bot, Gp_Packet *packet) {
   Gp_Result result = GP_SUCCESS;
 
   Gp_Buffer sendBuffer = {0};
-  if ((result = gp_write_varint(&sendBuffer, packet->packetID, _gp_write_byte_to_buffer)) < GP_SUCCESS) return result;
+  if ((result = gp_write_varint(&sendBuffer, packet->packetID)) < GP_SUCCESS) return result;
 
   switch (bot->state) {
   case GP_BOT_HANDSHAKE: {
-    result = _gp_write_packet_handshake(&sendBuffer, packet, _gp_write_byte_to_buffer);
+    result = _gp_write_packet_handshake(&sendBuffer, packet);
   } break;
   case GP_BOT_STATUS: {
-    result = _gp_write_packet_status(&sendBuffer, packet, _gp_write_byte_to_buffer);
+    result = _gp_write_packet_status(&sendBuffer, packet);
   } break;
   case GP_BOT_LOGIN: {
-    result = _gp_write_packet_login(&sendBuffer, packet, _gp_write_byte_to_buffer);
+    result = _gp_write_packet_login(&sendBuffer, packet);
   } break;
   case GP_BOT_PLAY: {
-    result = _gp_write_packet_play(&sendBuffer, packet, _gp_write_byte_to_buffer);
+    result = _gp_write_packet_play(&sendBuffer, packet);
   } break;
   default: assert(0);
   }
 
   Gp_Buffer lengthBuffer = {0};
-  if ((result = gp_write_varint(&lengthBuffer, sendBuffer.count, _gp_write_byte_to_buffer)) < GP_SUCCESS) return result;
+  if ((result = gp_write_varint(&lengthBuffer, sendBuffer.count)) < GP_SUCCESS) return result;
 
   if ((result = _gp_shift_buffer(&sendBuffer, lengthBuffer.count)) < GP_SUCCESS) return result;
   if ((result = _gp_copy_buffer(&sendBuffer, &lengthBuffer, 0)) < GP_SUCCESS) return result;
@@ -176,7 +176,7 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
 
   size_t save = bot->recvBuffer.current;
   do {
-    result = gp_parse_varint(&bot->recvBuffer, &length, _gp_read_byte_from_buffer);
+    result = gp_parse_varint(&bot->recvBuffer, &length);
     if (result == GP_UNDERFLOW) {
       // if ((result = _gp_reserve_buffer(&bot->recvBuffer, 1024)) < GP_SUCCESS) return result;
 
@@ -194,22 +194,22 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   }
 
   Gp_Varint packetId = 0;
-  if ((result = gp_parse_varint(&bot->recvBuffer, &packetId, _gp_read_byte_from_buffer)) < GP_SUCCESS) return result;
+  if ((result = gp_parse_varint(&bot->recvBuffer, &packetId)) < GP_SUCCESS) return result;
 
   printf("Bot received packet %d with length: %d, current state: %d\n", packetId, length, bot->state);
 
   switch (bot->state) {
   case GP_BOT_HANDSHAKE: {
-    result = _gp_parse_packet_handshake(&bot->recvBuffer, packetId, packet, _gp_read_byte_from_buffer);
+    result = _gp_parse_packet_handshake(&bot->recvBuffer, packetId, packet);
   } break;
   case GP_BOT_STATUS: {
-    result = _gp_parse_packet_status(&bot->recvBuffer, packetId, packet, _gp_read_byte_from_buffer);
+    result = _gp_parse_packet_status(&bot->recvBuffer, packetId, packet);
   } break;
   case GP_BOT_LOGIN: {
-    result = _gp_parse_packet_login(&bot->recvBuffer, packetId, packet, _gp_read_byte_from_buffer);
+    result = _gp_parse_packet_login(&bot->recvBuffer, packetId, packet);
   } break;
   case GP_BOT_PLAY: {
-    result = _gp_parse_packet_play(&bot->recvBuffer, packetId, packet, _gp_read_byte_from_buffer);
+    result = _gp_parse_packet_play(&bot->recvBuffer, packetId, packet);
   } break;
   default: assert(0);
   }
