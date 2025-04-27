@@ -11,7 +11,7 @@ Gp_Result gp_read_byte_from_buffer(void *buffer, uint8_t *data) {
 #define read_type(name, type, intType) \
 Gp_Result gp_read_##name##_from_buffer(void *buffer, type *data) { \
   if (!buffer || !data) return GP_INVALID_ARGS; \
- \
+  *(intType*)data = 0;\
   Gp_Result result = GP_SUCCESS; \
   for (uint8_t i = 0; i < sizeof(type); ++i) { \
     uint8_t byte = 0; \
@@ -46,30 +46,23 @@ Gp_Result gp_write_byte_to_buffer(void *buffer, uint8_t data) {
   return gp_write_bytes_to_buffer(buffer, &data, sizeof(data));
 }
 
-Gp_Result gp_write_uint16_to_buffer(void *buffer, uint16_t data) {
-  if (!buffer) return GP_INVALID_ARGS;
-  return gp_write_bytes_to_buffer(buffer, &data, sizeof(data));
+#define write_type(name, type, intType) \
+Gp_Result gp_write_##name##_to_buffer(void *buffer, type data) { \
+  if (!buffer) return GP_INVALID_ARGS; \
+  Gp_Result result = GP_SUCCESS; \
+  intType intData = *(intType*)&data; \
+  for (int i = sizeof(intType)-1; i >= 0; --i) { \
+    uint8_t byte = (uint8_t)((intData >> (i*8)) & 0xFF); \
+    if ((result = gp_write_byte_to_buffer(buffer, byte)) < GP_SUCCESS) return result; \
+  } \
+  return GP_SUCCESS; \
 }
 
-Gp_Result gp_write_uint32_to_buffer(void *buffer, uint32_t data) {
-  if (!buffer) return GP_INVALID_ARGS;
-  return gp_write_bytes_to_buffer(buffer, &data, sizeof(data));
-}
-
-Gp_Result gp_write_uint64_to_buffer(void *buffer, uint64_t data) {
-  if (!buffer) return GP_INVALID_ARGS;
-  return gp_write_bytes_to_buffer(buffer, &data, sizeof(data));
-}
-
-Gp_Result gp_write_float_to_buffer(void *buffer, float data) {
-  if (!buffer) return GP_INVALID_ARGS;
-  return gp_write_bytes_to_buffer(buffer, &data, sizeof(data));
-}
-
-Gp_Result gp_write_double_to_buffer(void *buffer, double data) {
-  if (!buffer) return GP_INVALID_ARGS;
-  return gp_write_bytes_to_buffer(buffer, &data, sizeof(data));
-}
+write_type(uint16, uint16_t, uint16_t)
+write_type(uint32, uint32_t, uint32_t)
+write_type(uint64, uint64_t, uint64_t)
+write_type(float,  float,    uint32_t)
+write_type(double, double,   uint64_t)
 
 Gp_Result gp_write_bytes_to_buffer(void *buffer, const void *bytes, size_t count) {
   if (!buffer) return GP_INVALID_ARGS;
@@ -97,7 +90,7 @@ Gp_Result gp_write_bytes_to_buffer(void *buffer, const void *bytes, size_t count
 Gp_Result _gp_reserve_buffer(Gp_Buffer *buffer, size_t capacity) {
   if (!buffer || !capacity) return GP_INVALID_ARGS;
 
-  buffer->data = malloc(buffer->capacity += capacity);
+  buffer->data = realloc(buffer->data, buffer->capacity += capacity);
   if (!buffer->data) return GP_BUY_MORE_RAM;
 
   return GP_SUCCESS;
@@ -139,7 +132,8 @@ Gp_Result _gp_copy_buffer(Gp_Buffer *dst, const Gp_Buffer *src, size_t position)
 
   if (!dst->data) return GP_INVALID_ARGS;
   memcpy(&dst->data[position], src->data, src->count);
-  // dst->count += max(0, src->count-dst->count-position);
+  if (position + src->count > dst->count)
+    dst->count = position + src->count;
 
   return GP_SUCCESS;
 }

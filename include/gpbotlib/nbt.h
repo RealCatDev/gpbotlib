@@ -95,6 +95,9 @@ typedef Gp_Nbt_Tag Gp_Nbt;
 
 bool gp_is_valid_nbt(Gp_Nbt nbt);
 
+Gp_Result gp_parse_nbt_tag_compound(void *buffer, Gp_Nbt_Tag_Compound *compound);
+Gp_Result gp_write_nbt_tag_compound(void *buffer, Gp_Nbt_Tag_Compound compound);
+
 Gp_Result gp_parse_nbt_tag(void *buffer, Gp_Nbt_Tag *tag);
 Gp_Result gp_write_nbt_tag(void *buffer, Gp_Nbt_Tag tag);
 

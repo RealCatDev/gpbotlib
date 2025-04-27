@@ -5,8 +5,41 @@
 #include <string.h>
 #include <assert.h>
 
-bool gp_is_valid_nbt(const Gp_Nbt nbt) {
+bool gp_is_valid_nbt(Gp_Nbt nbt) {
   return nbt.type == GP_NBT_TAG_COMPOUND;
+}
+
+Gp_Result gp_parse_nbt_tag_compound(void *buffer, Gp_Nbt_Tag_Compound *compound) {
+  if (!buffer || !compound) return GP_INVALID_ARGS;
+
+  Gp_Nbt_Tag tag = {0};
+  Gp_Result result = GP_SUCCESS;
+  while ((result = gp_parse_nbt_tag(buffer, &tag)) >= GP_SUCCESS) {
+    if (tag.type == GP_NBT_TAG_END) break;
+
+    if (compound->count >= compound->capacity) {
+      if (compound->capacity) compound->capacity <<= 1;
+      else compound->capacity = 8;
+
+      compound->tags = realloc(compound->tags, sizeof(*compound->tags) * compound->capacity);
+      if (!compound->tags) return GP_BUY_MORE_RAM;
+    }
+
+    assert(compound->tags);
+    compound->tags[compound->count++] = tag;
+  }
+
+  return result;
+}
+
+Gp_Result gp_write_nbt_tag_compound(void *buffer, Gp_Nbt_Tag_Compound compound) {
+  if (!buffer) return GP_INVALID_ARGS;
+
+  Gp_Result result = GP_SUCCESS;
+  for (Gp_Nbt_Tag *ptr = compound.tags, *end = compound.tags+compound.count; ptr != end; ++ptr)
+    if ((result = gp_write_nbt_tag(buffer, *ptr)) < GP_SUCCESS) return result;
+
+  return gp_write_byte_to_buffer(buffer, GP_NBT_TAG_END);
 }
 
 Gp_Result gp_parse_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As *as, Gp_Nbt_Tag_Type type) {
@@ -56,31 +89,16 @@ Gp_Result gp_parse_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As *as, Gp_Nbt_Tag_Type t
 
     as->List.payload = malloc(sizeof(*as->List.payload) * as->List.length);
     if (!as->List.payload) return GP_BUY_MORE_RAM;
+
     for (int32_t i = 0; i < as->List.length; ++i)
       if ((result = gp_parse_nbt_tag_as(buffer, &as->List.payload[i], as->List.tagType)) < GP_SUCCESS) return result;
   } break;
-  case GP_NBT_TAG_COMPOUND: {
-    Gp_Nbt_Tag currentTag = {0};
-    while ((result = gp_parse_nbt_tag(buffer, &currentTag)) >= GP_SUCCESS && currentTag.type != GP_NBT_TAG_END) {
-      if (as->Compound.count >= as->Compound.capacity) {
-        if (as->Compound.capacity) as->Compound.capacity <<= 1;
-        else as->Compound.capacity = 8;
-
-        as->Compound.tags = realloc(as->Compound.tags, sizeof(*as->Compound.tags) * as->Compound.capacity);
-        if (!as->Compound.tags) return GP_BUY_MORE_RAM;
-      }
-
-      assert(as->Compound.tags);
-      as->Compound.tags[as->Compound.count++] = currentTag;
-    }
-  } break;
+  case GP_NBT_TAG_COMPOUND: return gp_parse_nbt_tag_compound(buffer, &as->Compound);
   case GP_NBT_TAG_INT_ARRAY: {
     if ((result = gp_read_uint32_from_buffer(buffer, &as->IntArray.size)) < GP_SUCCESS) return result;
 
     as->IntArray.data = malloc(sizeof(*as->IntArray.data) * as->IntArray.size);
     if (!as->IntArray.data) return GP_BUY_MORE_RAM;
-
-    if ((result = gp_read_bytes_from_buffer(buffer, as->IntArray.data, sizeof(*as->IntArray.data) * as->IntArray.size)) < GP_SUCCESS) return result;
 
     for (int32_t i = 0; i < as->IntArray.size; ++i)
       if ((result = gp_read_uint32_from_buffer(buffer, &as->IntArray.data[i])) < GP_SUCCESS) return result;
@@ -131,9 +149,6 @@ Gp_Result gp_write_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As as, Gp_Nbt_Tag_Type ty
   case GP_NBT_TAG_STRING: {
     if ((result = gp_write_uint16_to_buffer(buffer, as.String.length)) < GP_SUCCESS) return result;
 
-    as.String.string = malloc(as.String.length);
-    if (!as.String.string) return GP_BUY_MORE_RAM;
-
     if ((result = gp_write_bytes_to_buffer(buffer, as.String.string, as.String.length)) < GP_SUCCESS) return result;
   } break;
   case GP_NBT_TAG_LIST: {
@@ -143,16 +158,11 @@ Gp_Result gp_write_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As as, Gp_Nbt_Tag_Type ty
     for (int32_t i = 0; i < as.List.length; ++i)
       if ((result = gp_write_nbt_tag_as(buffer, as.List.payload[i], as.List.tagType)) < GP_SUCCESS) return result;
   } break;
-  case GP_NBT_TAG_COMPOUND: {
-    for (Gp_Nbt_Tag *ptr = as.Compound.tags, *end = as.Compound.tags+as.Compound.count; ptr != end; ++ptr)
-      if ((result = gp_write_nbt_tag(buffer, *ptr)) < GP_SUCCESS) return result;
-
-    return gp_write_nbt_tag(buffer, (Gp_Nbt_Tag){0});
-  } break;
+  case GP_NBT_TAG_COMPOUND: return gp_write_nbt_tag_compound(buffer, as.Compound);
   case GP_NBT_TAG_INT_ARRAY: {
     if ((result = gp_write_uint32_to_buffer(buffer, as.IntArray.size)) < GP_SUCCESS) return result;
 
-    for (int32_t i = 0; i < as.ByteArray.size; ++i)
+    for (int32_t i = 0; i < as.IntArray.size; ++i)
       if ((result = gp_write_uint32_to_buffer(buffer, as.IntArray.data[i])) < GP_SUCCESS) return result;
   } break;
   case GP_NBT_TAG_LONG_ARRAY: {

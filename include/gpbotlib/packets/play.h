@@ -14,8 +14,8 @@ typedef struct Gp_Join_Game_Packet_Data {
   int8_t prevGamemode;
   Gp_Varint worldCount;
   Gp_String *dimensionNames;
-  Gp_Nbt_Tag dimensionCodec;
-  Gp_Nbt_Tag dimension;
+  Gp_Nbt_Tag_Compound dimensionCodec;
+  Gp_Nbt_Tag_Compound dimension;
   Gp_String dimensionName;
   uint64_t hashedSeed;
   Gp_Varint maxPlayers;

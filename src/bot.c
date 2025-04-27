@@ -196,6 +196,8 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
     if ((result = _gp_bot_recv(bot)) < GP_SUCCESS) return result;
   }
 
+  printf("Current: %d\n", bot->recvBuffer.current);
+
   Gp_Varint packetId = 0;
   if ((result = gp_parse_varint(&bot->recvBuffer, &packetId)) < GP_SUCCESS) return result;
 
@@ -217,8 +219,12 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   default: assert(0);
   }
 
-  bot->recvBuffer.current -= length;
+  if (result != GP_SUCCESS) return result;
+
+  printf("Current: %d\n", bot->recvBuffer.current);
+
   memmove(bot->recvBuffer.data, &bot->recvBuffer.data[bot->recvBuffer.current], bot->recvBuffer.count -= length+lengthSize);
+  bot->recvBuffer.current -= length+lengthSize;
 
   return GP_SUCCESS;
 }

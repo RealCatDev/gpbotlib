@@ -39,6 +39,7 @@ Gp_Result gp_parse_join_game_packet_data(void *buffer, Gp_Packet **packet) {
   *packet = gp_packet_create(38, sizeof(Gp_Join_Game_Packet_Data));
   if (!*packet) return GP_BUY_MORE_RAM;
   Gp_Join_Game_Packet_Data *joinGame = (Gp_Join_Game_Packet_Data*)(*packet)->data;
+  memset(joinGame, 0, sizeof(*joinGame));
 
   Gp_Result result = GP_SUCCESS;
   if ((result = gp_read_uint32_from_buffer(buffer, &joinGame->entityID)) < GP_SUCCESS) return result;
@@ -53,8 +54,8 @@ Gp_Result gp_parse_join_game_packet_data(void *buffer, Gp_Packet **packet) {
   for (Gp_Varint i = 0; i < joinGame->worldCount; ++i)
     if ((result = gp_parse_string(buffer, &joinGame->dimensionNames[i])) < GP_SUCCESS) return result;
 
-  if ((result = gp_parse_nbt_tag(buffer, &joinGame->dimensionCodec)) < GP_SUCCESS) return result;
-  if ((result = gp_parse_nbt_tag(buffer, &joinGame->dimension)) < GP_SUCCESS) return result;
+  if ((result = gp_parse_nbt_tag_compound(buffer, &joinGame->dimensionCodec)) < GP_SUCCESS) return result;
+  if ((result = gp_parse_nbt_tag_compound(buffer, &joinGame->dimension)) < GP_SUCCESS) return result;
   if ((result = gp_parse_string(buffer, &joinGame->dimensionName)) < GP_SUCCESS) return result;
 
   if ((result = gp_read_uint64_from_buffer(buffer, &joinGame->hashedSeed)) < GP_SUCCESS) return result;
