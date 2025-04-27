@@ -17,7 +17,7 @@ Gp_Result gp_parse_varint(void *buffer, Gp_Varint *value) {
 
     val |= (currentByte & GP_VARINT_SEGMENT_BITS) << position;
 
-    if((currentByte & GP_VARINT_CONTINUE_BIT) == 0) break;
+    if ((currentByte & GP_VARINT_CONTINUE_BIT) == 0) break;
 
     position += 7;
 

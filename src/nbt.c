@@ -12,6 +12,8 @@ bool gp_is_valid_nbt(const Gp_Nbt nbt) {
 Gp_Result gp_parse_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As *as, Gp_Nbt_Tag_Type type) {
   if (!buffer || !as) return GP_INVALID_ARGS;
 
+  memset(as, 0, sizeof(*as));
+
   Gp_Result result = GP_SUCCESS;
   switch (type) {
   case GP_NBT_TAG_BYTE: {
@@ -27,15 +29,15 @@ Gp_Result gp_parse_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As *as, Gp_Nbt_Tag_Type t
     return gp_read_uint64_from_buffer(buffer, &as->Long);
   } break;
   case GP_NBT_TAG_FLOAT: {
-    return gp_read_uint32_from_buffer(buffer, (uint32_t*)&as->Float);
+    return gp_read_float_from_buffer(buffer, &as->Float);
   } break;
   case GP_NBT_TAG_DOUBLE: {
-    return gp_read_uint64_from_buffer(buffer, (uint64_t*)&as->Double);
+    return gp_read_double_from_buffer(buffer, &as->Double);
   } break;
   case GP_NBT_TAG_BYTE_ARRAY: {
     if ((result = gp_read_uint32_from_buffer(buffer, &as->ByteArray.size)) < GP_SUCCESS) return result;
 
-    as->ByteArray.array = malloc(as->ByteArray.size);
+    as->ByteArray.array = malloc(sizeof(*as->ByteArray.array) * as->ByteArray.size);
     if (!as->ByteArray.array) return GP_BUY_MORE_RAM;
 
     if ((result = gp_read_bytes_from_buffer(buffer, as->ByteArray.array, as->ByteArray.size)) < GP_SUCCESS) return result;
@@ -75,18 +77,22 @@ Gp_Result gp_parse_nbt_tag_as(void *buffer, Gp_Nbt_Tag_As *as, Gp_Nbt_Tag_Type t
   case GP_NBT_TAG_INT_ARRAY: {
     if ((result = gp_read_uint32_from_buffer(buffer, &as->IntArray.size)) < GP_SUCCESS) return result;
 
-    as->IntArray.data = malloc(as->IntArray.size);
+    as->IntArray.data = malloc(sizeof(*as->IntArray.data) * as->IntArray.size);
     if (!as->IntArray.data) return GP_BUY_MORE_RAM;
 
     if ((result = gp_read_bytes_from_buffer(buffer, as->IntArray.data, sizeof(*as->IntArray.data) * as->IntArray.size)) < GP_SUCCESS) return result;
+
+    for (int32_t i = 0; i < as->IntArray.size; ++i)
+      if ((result = gp_read_uint32_from_buffer(buffer, &as->IntArray.data[i])) < GP_SUCCESS) return result;
   } break;
   case GP_NBT_TAG_LONG_ARRAY: {
     if ((result = gp_read_uint32_from_buffer(buffer, &as->LongArray.size)) < GP_SUCCESS) return result;
 
-    as->LongArray.data = malloc(as->LongArray.size);
+    as->LongArray.data = malloc(sizeof(*as->LongArray.data) * as->LongArray.size);
     if (!as->LongArray.data) return GP_BUY_MORE_RAM;
 
-    if ((result = gp_read_bytes_from_buffer(buffer, as->LongArray.data, sizeof(*as->LongArray.data) * as->LongArray.size)) < GP_SUCCESS) return result;
+    for (int32_t i = 0; i < as->LongArray.size; ++i)
+      if ((result = gp_read_uint64_from_buffer(buffer, &as->LongArray.data[i])) < GP_SUCCESS) return result;
   } break;
   }
 

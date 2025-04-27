@@ -137,27 +137,15 @@ Gp_Packet *gp_create_login_plugin_response_packet(Gp_Varint messageId, bool succ
 Gp_Result _gp_parse_packet_login(void *buffer, Gp_Varint packetId, Gp_Packet **packet) { // Clientbound
   if (!buffer || !packet) return GP_INVALID_ARGS;
 
-  Gp_Result result = GP_SUCCESS;
   switch (packetId) {
-  case 0: { // Disconnect
-    result = gp_parse_disconnect_packet_data(buffer, packet);
-  } break;
-  case 1: { // Encryption request
-    result = gp_parse_encryption_request_packet_data(buffer, packet);
-  } break;
-  case 2: { // Login success
-    result = gp_parse_login_success_packet_data(buffer, packet);
-  } break;
-  case 3: { // Set compression
-    result = gp_parse_set_compression_packet_data(buffer, packet);
-  } break;
-  case 4: { // Login plugin request
-    result = gp_parse_login_plugin_request_packet_data(buffer, packet);
-  } break;
-  default: return GP_INVALID_PACKET;
+  case 0: return gp_parse_disconnect_packet_data(buffer, packet); // Disconnect
+  case 1: return gp_parse_encryption_request_packet_data(buffer, packet); // Encryption request
+  case 2: return gp_parse_login_success_packet_data(buffer, packet); // Login success
+  case 3: return gp_parse_set_compression_packet_data(buffer, packet); // Set compression
+  case 4: return gp_parse_login_plugin_request_packet_data(buffer, packet); // Login plugin request
   }
 
-  return result;
+  return GP_INVALID_PACKET;
 }
 
 Gp_Result _gp_write_packet_login(void *buffer, Gp_Packet *packet) { // Serverbound
@@ -198,9 +186,6 @@ Gp_Result _gp_handle_packet_login(Gp_Bot *bot, Gp_Packet *packet) {
   } break;
   case 2: { // Login success
     bot->state = GP_BOT_PLAY;
-    return _gp_push_event(&bot->eventQueue, (Gp_Event){
-      .type = GP_EVENT_JOIN
-    });
   } break;
   case 3: { // Set compression
     assert(0 && "Unimplemented");

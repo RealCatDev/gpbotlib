@@ -9,7 +9,7 @@
 #include "gpbotlib/packets/handshake.h"
 // #include "gpbotlib/packets/status.h"
 #include "gpbotlib/packets/login.h"
-// #include "gpbotlib/packets/play.h"
+#include "gpbotlib/packets/play.h"
 
 Gp_Result _gp_parse_packet_handshake(void *buffer, Gp_Varint packetId, Gp_Packet **packet);
 Gp_Result _gp_write_packet_handshake(void *buffer, Gp_Packet *packet);

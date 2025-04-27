@@ -160,7 +160,10 @@ Gp_Result _gp_bot_send_packet(Gp_Bot *bot, Gp_Packet *packet) {
 Gp_Result _gp_bot_recv(Gp_Bot *bot) {
   int n = bot->recv(bot->data, &bot->recvBuffer.data[bot->recvBuffer.count], bot->recvBuffer.capacity-bot->recvBuffer.count);
   if (n < 0) return GP_INTERNAL_ERROR;
-  else if (!n) return GP_DISCONNECTED;
+  else if (!n) {
+    __debugbreak();
+    return GP_DISCONNECTED;
+  }
   bot->recvBuffer.count += n;
 
   return GP_SUCCESS;
@@ -178,7 +181,7 @@ Gp_Result _gp_bot_recv_packet(Gp_Bot *bot, Gp_Packet **packet) {
   do {
     result = gp_parse_varint(&bot->recvBuffer, &length);
     if (result == GP_UNDERFLOW) {
-      // if ((result = _gp_reserve_buffer(&bot->recvBuffer, 1024)) < GP_SUCCESS) return result;
+      if (bot->recvBuffer.count == bot->recvBuffer.capacity && (result = _gp_reserve_buffer(&bot->recvBuffer, 1024)) < GP_SUCCESS) return result;
 
       bot->recvBuffer.current = save;
       if ((result = _gp_bot_recv(bot)) < GP_SUCCESS) return result;
